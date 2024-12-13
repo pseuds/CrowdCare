@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongo-bridge
+spec:
+  selector:
+    matchLabels:
+      app: mongo-bridge
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: mongo-bridge
+    spec:
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1    # Add this line
+            preference:  # Add this line
+              matchExpressions:
+              - key: name
+                operator: In
+                values:
+                - group6pi
+
+      containers:
+      - name: mqtt-mongo
+        image: mongo-bridge:vTest
+        imagePullPolicy: IfNotPresent

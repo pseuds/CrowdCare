@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: streamlitmongo
+spec:
+  selector:
+    matchLabels:
+      app: streamlitmongo
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: streamlitmongo
+    spec:
+      dnsPolicy: ClusterFirst
+      dnsConfig:
+        nameservers:
+          - 8.8.8.8
+          - 8.8.4.4
+        searches:
+          - default.svc.cluster.local
+          - svc.cluster.local
+          - cluster.local
+        options:
+          - name: ndots
+            value: "5"
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1    # Add this line
+            preference:  # Add this line
+              matchExpressions:
+              - key: name
+                operator: In
+                values:
+                - group6pi
+      containers:
+      - name: streamlitmongo
+        image: streamlitmongo:v3
+        imagePullPolicy: IfNotPresent
